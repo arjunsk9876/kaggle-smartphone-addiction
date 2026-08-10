@@ -20,6 +20,9 @@ train["gender"] = train["gender"].fillna("Unknown").map({"Male": 0, "Female": 1,
 train["stress_level"] = train["stress_level"].fillna("Unknown").map({"Low": 0, "Medium": 1, "High": 2, "Unknown": 3})
 train["academic_work_impact"] = train["academic_work_impact"].fillna("Unknown").map({"No": 0, "Yes": 1, "Unknown": 2})
 
+train["recreation_hours"] = train["social_media_hours"] + train["gaming_hours"]
+train["screen_sleep_ratio"] = train["daily_screen_time_hours"] / train["sleep_hours"]
+
 y = train["addicted_label"]
 
 features = [
@@ -33,14 +36,17 @@ features = [
     "app_opens_per_day",
     "weekend_screen_time",
     "gender",
-    "stress_level"
+    "stress_level",
+    "academic_work_impact",
+    "recreation_hours",
+    "screen_sleep_ratio"
 ]
 
 X = train[features]
 
 train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=1)
 
-model = XGBClassifier(random_state=1, n_jobs=-1, n_estimators=300, max_depth=5, learning_rate=0.05)
+model = XGBClassifier(random_state=1, n_jobs=-1, n_estimators=500, max_depth=6, learning_rate=0.03)
 model.fit(train_X, train_y)
 val_predictions = model.predict(val_X)
 
@@ -64,6 +70,9 @@ test["weekend_screen_time"] = test["weekend_screen_time"].fillna(test["weekend_s
 test["gender"] = test["gender"].fillna("Unknown").map({"Male": 0, "Female": 1, "Other": 2, "Unknown": 3})
 test["stress_level"] = test["stress_level"].fillna("Unknown").map({"Low": 0, "Medium": 1, "High": 2, "Unknown": 3})
 test["academic_work_impact"] = test["academic_work_impact"].fillna("Unknown").map({"No": 0, "Yes": 1, "Unknown": 2})
+
+test["recreation_hours"] = test["social_media_hours"] + test["gaming_hours"]
+test["screen_sleep_ratio"] = test["daily_screen_time_hours"] / test["sleep_hours"]
 
 test_X = test[features]
 test_predictions = model.predict(test_X)
