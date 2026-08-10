@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
@@ -40,8 +40,7 @@ X = train[features]
 
 train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=1)
 
-# n_jobs=-1 -> use all CPU cores instead of 1 (this is why it was hanging)
-model = RandomForestClassifier(random_state=1, n_jobs=-1)
+model = XGBClassifier(random_state=1, n_jobs=-1, n_estimators=300, max_depth=5, learning_rate=0.05)
 model.fit(train_X, train_y)
 val_predictions = model.predict(val_X)
 
@@ -51,8 +50,7 @@ print("Validation Accuracy:", val_accuracy)
 
 model.fit(X, y)
 
-# clean test FIRST, then take the features slice -- previously test_X
-# was copied before cleaning, so it still had NaNs when predict() ran
+
 test["age"] = test["age"].fillna(test["age"].median())
 test["daily_screen_time_hours"] = test["daily_screen_time_hours"].fillna(test["daily_screen_time_hours"].median())
 test["social_media_hours"] = test["social_media_hours"].fillna(test["social_media_hours"].median())
